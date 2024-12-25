@@ -1,12 +1,13 @@
 /******************
-Name:
+Name: Shira Cababia
 ID:
-Assignment:
+Assignment: EX4
 *******************/
 #include <stdio.h>
 #include <string.h>
 
 void task1RobotPaths();
+int robotPath(int curUp, int curRight); //1 
 void task2HumanPyramid();
 void task3ParenthesisValidator();
 void task4QueensBattle();
@@ -60,9 +61,27 @@ int main()
     } while (task != 6);
 }
 
+// Case 1
 void task1RobotPaths()
 {
-    // Todo
+    int upCoordinate, rightCoordinate, numPaths;
+    printf("Please enter the coordinates of the robot (column, row):\n");
+    scanf(" %d %d", &upCoordinate, &rightCoordinate);
+    numPaths = robotPath(upCoordinate, rightCoordinate);
+    printf("The total number of paths the robot can take to reach home is: %d\n", numPaths);
+}
+
+int robotPath(int curUp, int curRight)
+{
+    if (curUp == 0 && curRight == 0)
+    {
+        return 1;
+    }
+    else if (curUp < 0 || curRight < 0)
+    {
+        return 0;
+    }
+    return (robotPath((curUp - 1), curRight) + robotPath(curUp, (curRight - 1)));
 }
 
 void task2HumanPyramid()
