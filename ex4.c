@@ -7,10 +7,6 @@ Assignment: EX4
 #include <string.h>
 
 #define LEVEL_OF_PYRAMID 5
-// #define NUM_OF_CHEERLEADERS 15
-#define TRUE_FOR_3 0
-#define FALSE_FOR_3 1
-#define DEFAULT_CHAR_3 '\n'
 
 void task1RobotPaths(); // 1
 int robotPath(int upCoordinate, int rightCoordinate);
@@ -18,9 +14,11 @@ void task2HumanPyramid(); // 2
 void initializeChrldrsArr(float cheerleadersWeights[LEVEL_OF_PYRAMID][LEVEL_OF_PYRAMID]);
 float weightsPyramid(int row, int cloumn, float cheerleadersWeights[LEVEL_OF_PYRAMID][LEVEL_OF_PYRAMID]);
 void task3ParenthesisValidator(); // 3
-int isBalanced(char x);
+int isBalanced(char closerChar, int flag);
+char getCloserChar(char c);
+void clearBuffer(char c);
+void task4QueensBattle(); // 4
 
-void task4QueensBattle();
 void task5CrosswordGenerator();
 
 int main()
@@ -40,13 +38,13 @@ int main()
         {
             switch (task)
             {
-            case 6: // Done
+            case 6:
                 printf("Goodbye!\n");
                 break;
-            case 1: // Done
+            case 1:
                 task1RobotPaths();
                 break;
-            case 2: // Done
+            case 2:
                 task2HumanPyramid();
                 break;
             case 3:
@@ -58,7 +56,7 @@ int main()
             case 5:
                 task5CrosswordGenerator();
                 break;
-            default: // Done
+            default:
                 printf("Please choose a task number from the list.\n");
                 break;
             }
@@ -71,8 +69,8 @@ int main()
     } while (task != 6);
 }
 
-// Case 1 :
-// The func gets the coordinates from the user, use the recursive function "robotPath" and print the number of paths.
+/* Case 1 :
+The func gets the coordinates from the user, use the recursive function "robotPath" and print the number of paths. */
 void task1RobotPaths()
 {
     int upCoordinate, rightCoordinate, numPaths;
@@ -97,8 +95,8 @@ int robotPath(int upCoordinate, int rightCoordinate)
     return (robotPath((upCoordinate - 1), rightCoordinate) + robotPath(upCoordinate, (rightCoordinate - 1)));
 }
 
-// Case 2 :
-/* The fun initialize the cheerleaders' weights array to invalid weight (-1), gets the weights from the user,
+/* Case 2 :
+The func initialize the cheerleaders' weights array to invalid weight (-1), gets the weights from the user,
 use the recursive function "weightsPyramid" and print the total weight for every cheerleader.*/
 void task2HumanPyramid()
 {
@@ -160,46 +158,94 @@ float weightsPyramid(int row, int cloumn, float cheerleadersWeights[LEVEL_OF_PYR
             (0.5 * weightsPyramid((row - 1), cloumn, cheerleadersWeights)) + ownWeight);
 }
 
-// Case 3
+/* Case 3 :
+The func prints instructions and result for the given input.*/
 void task3ParenthesisValidator()
 {
-    int result;
+    int flag = 0;
     printf("Please enter a term for validation:\n");
-    result = isBalanced(DEFAULT_CHAR_3);
-    scanf("%*[^\n]");
-
-    if (result == 0) {
+    scanf("%*c");
+    if (isBalanced('\0', flag))
+    {
         printf("The parentheses are balanced correctly.\n");
     }
-    else {
+    else
+    {
         printf("The parentheses are not balanced correctly.\n");
     }
 }
 
-int isBalanced(char x)
+// The func checks if a sequence of brackets is properly matched and balanced by examining each character recursively.
+int isBalanced(char closerChar, int flag)
 {
-    char c;
-    scanf("%c", &c);
-    if (c == '(' || c == '{' || c == '[' || c == '<')
+    char currentC;
+    scanf("%c", &currentC);
+    if (currentC == '\n' && flag == 0)
     {
-        return isBalanced(c);
+        return isBalanced(closerChar, flag);
     }
-    else if ((x == '(' && c == ')') || (x == '{' && c == '}') || (x == '[' && c == ']') || (x == '<' && c == '>'))
+    if (currentC == '\n')
+    {
+        return closerChar == '\0';
+    }
+    flag = 1;
+    if ((currentC == '(' || currentC == '{' || currentC == '[' || currentC == '<') &&
+        !isBalanced(getCloserChar(currentC), flag))
     {
         return 0;
     }
-    else if (c == '\n')
+    if (currentC == ')' || currentC == '}' || currentC == ']' || currentC == '>')
     {
+        if (currentC != closerChar)
+        {
+            clearBuffer(currentC);
+            return 0;
+        }
         return 1;
     }
-    return isBalanced(x);
+    return isBalanced(closerChar, flag);
 }
 
+// The func returning the matching closer for the given char.
+char getCloserChar(char c)
+{
+    if (c == '(')
+    {
+        return ')';
+    }
+    else if (c == '{')
+    {
+        return '}';
+    }
+    else if (c == '[')
+    {
+        return ']';
+    }
+    else if (c == '<')
+    {
+        return '>';
+    }
+    return '\0';
+}
+
+// The func clean the buffer recursively.
+void clearBuffer(char c)
+{
+    if (scanf("%c", &c) == 1 && c != '\n')
+    {
+        clearBuffer(c);
+    }
+}
+
+/* Case 4 :
+*/
 void task4QueensBattle()
 {
     // Todo
 }
 
+/* Case 5 :
+*/
 void task5CrosswordGenerator()
 {
     // Todo
