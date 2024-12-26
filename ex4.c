@@ -8,6 +8,9 @@ Assignment: EX4
 
 #define LEVEL_OF_PYRAMID 5
 // #define NUM_OF_CHEERLEADERS 15
+#define TRUE_FOR_3 0
+#define FALSE_FOR_3 1
+#define DEFAULT_CHAR_3 '\n'
 
 void task1RobotPaths(); // 1
 int robotPath(int upCoordinate, int rightCoordinate);
@@ -15,6 +18,8 @@ void task2HumanPyramid(); // 2
 void initializeChrldrsArr(float cheerleadersWeights[LEVEL_OF_PYRAMID][LEVEL_OF_PYRAMID]);
 float weightsPyramid(int row, int cloumn, float cheerleadersWeights[LEVEL_OF_PYRAMID][LEVEL_OF_PYRAMID]);
 void task3ParenthesisValidator(); // 3
+int isBalanced(char x);
+
 void task4QueensBattle();
 void task5CrosswordGenerator();
 
@@ -93,7 +98,7 @@ int robotPath(int upCoordinate, int rightCoordinate)
 }
 
 // Case 2 :
-/* The fun initialize the cheerleaders' weights array to invalid weight (-1), gets the weights from the user, 
+/* The fun initialize the cheerleaders' weights array to invalid weight (-1), gets the weights from the user,
 use the recursive function "weightsPyramid" and print the total weight for every cheerleader.*/
 void task2HumanPyramid()
 {
@@ -158,7 +163,36 @@ float weightsPyramid(int row, int cloumn, float cheerleadersWeights[LEVEL_OF_PYR
 // Case 3
 void task3ParenthesisValidator()
 {
-    // Todo
+    int result;
+    printf("Please enter a term for validation:\n");
+    result = isBalanced(DEFAULT_CHAR_3);
+    scanf("%*[^\n]");
+
+    if (result == 0) {
+        printf("The parentheses are balanced correctly.\n");
+    }
+    else {
+        printf("The parentheses are not balanced correctly.\n");
+    }
+}
+
+int isBalanced(char x)
+{
+    char c;
+    scanf("%c", &c);
+    if (c == '(' || c == '{' || c == '[' || c == '<')
+    {
+        return isBalanced(c);
+    }
+    else if ((x == '(' && c == ')') || (x == '{' && c == '}') || (x == '[' && c == ']') || (x == '<' && c == '>'))
+    {
+        return 0;
+    }
+    else if (c == '\n')
+    {
+        return 1;
+    }
+    return isBalanced(x);
 }
 
 void task4QueensBattle()
