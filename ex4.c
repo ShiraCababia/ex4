@@ -7,6 +7,7 @@ Assignment: EX4
 #include <string.h>
 
 #define LEVEL_OF_PYRAMID 5
+#define BOARD_DIMENSIONS 20
 
 void task1RobotPaths(); // 1
 int robotPath(int upCoordinate, int rightCoordinate);
@@ -18,8 +19,18 @@ int isBalanced(char closerChar, int flag);
 char getCloserChar(char c);
 void clearBuffer(char c);
 void task4QueensBattle(); // 4
+void initializeBoardArr(char boardArr[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int isSolutionForBoard(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                       char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int checkIfLocationPossible(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                            char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int isQueenInRow(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int isQueenInColumn(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int isQueenInCloseDiagonal(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim);
+int isQueenInArea(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                  char area, int row, int column, int boardDim);
+void task5CrosswordGenerator(); // 5
 
-void task5CrosswordGenerator();
 
 int main()
 {
@@ -238,14 +249,161 @@ void clearBuffer(char c)
 }
 
 /* Case 4 :
-*/
+ The func gets the board and the num of dimensions from the user, and eventually print the solved board
+ if there is one.*/
 void task4QueensBattle()
 {
-    // Todo
+    char boardByUser[BOARD_DIMENSIONS][BOARD_DIMENSIONS] = {0};
+    char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS] = {0};
+    int boardDim, row = 0, column = 0;
+    printf("Please enter the board dimensions:\n");
+    scanf("%d", &boardDim);
+    printf("Please enter a %d*%d puzzle board:\n", boardDim, boardDim);
+    // Initialize the (future-) solved board to '*' as a start.
+    initializeBoardArr(solvedBoard, row, column, BOARD_DIMENSIONS);
+    // Insert the input entered by the user to the board.
+    for (int i = 0; i < boardDim; i++)
+    {
+        for (int j = 0; j < boardDim; j++)
+        {
+            scanf(" %c", &boardByUser[i][j]);
+        }
+    }
+    // If there is a solution - print it.
+    if (isSolutionForBoard(solvedBoard, boardByUser, row, column, boardDim))
+    {
+        printf("Solution:\n");
+        for (int i = 0; i < boardDim; i++)
+        {
+            for (int j = 0; j < boardDim; j++)
+            {
+                printf("%c ", solvedBoard[i][j]);
+            }
+            printf("\n");
+        }
+    }
+    else
+    {
+        printf("This puzzle cannot be solved.\n");
+    }
+}
+
+// The func initializes the solved array with values of '*'.
+void initializeBoardArr(char boardArr[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    if (row >= boardDim)
+    {
+        return;
+    }
+    if (column >= boardDim)
+    {
+        return initializeBoardArr(boardArr, (row + 1), 0, boardDim);
+    }
+    boardArr[row][column] = '*';
+    initializeBoardArr(boardArr, row, (column + 1), boardDim);
+}
+
+// The func checks if there is a solution for the given board.
+int isSolutionForBoard(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                       char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    if (row >= boardDim)
+    {
+        return 1;
+    }
+    if (column >= boardDim)
+    {
+        return 0;
+    }
+    // If there is no queen in row, column, close diagonal or area - locate the queen.
+    if (checkIfLocationPossible(solvedBoard, board, row, column, boardDim))
+    {
+        solvedBoard[row][column] = 'X';
+        // Do it for the row below. If possible - return 1.
+        if (isSolutionForBoard(solvedBoard, board, row + 1, 0, boardDim))
+        {
+            return 1;
+        }
+        // If there is no place to locate the queen in the row below, Put '*' in the current and go back.
+        solvedBoard[row][column] = '*';
+    }
+    // Move to next column.
+    return isSolutionForBoard(solvedBoard, board, row, column + 1, boardDim);
+}
+
+/* The func checks if there is already a queeen in the given row, column, diagonal or area.
+Returns 0 - If there *is* one (so we can't locate the queen in it). */
+int checkIfLocationPossible(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                            char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    return isQueenInRow(solvedBoard, row, 0, boardDim) && isQueenInColumn(solvedBoard, 0, column, boardDim) &&
+           isQueenInCloseDiagonal(solvedBoard, row, column, boardDim) &&
+           isQueenInArea(solvedBoard, board, board[row][column], 0, 0, boardDim);
+}
+
+/* The func checks if there is already a queeen in the given row.
+Returns 0 - If there *is* one (so we can't locate the queen in it). */
+int isQueenInRow(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    if (column >= boardDim)
+    {
+        return 1;
+    }
+    if (solvedBoard[row][column] == 'X')
+    {
+        return 0;
+    }
+    return isQueenInRow(solvedBoard, row, column + 1, boardDim);
+}
+
+// The func checks if there is already a queeen in the given column.
+int isQueenInColumn(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    if (row >= boardDim)
+    {
+        return 1;
+    }
+    if (solvedBoard[row][column] == 'X')
+    {
+        return 0;
+    }
+    return isQueenInColumn(solvedBoard, row + 1, column, boardDim);
+}
+
+// The func checks if there is already a queeen in the close diagonals.
+int isQueenInCloseDiagonal(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], int row, int column, int boardDim)
+{
+    if ((row < boardDim - 1 && column < boardDim - 1 && solvedBoard[row + 1][column + 1] == 'X') ||
+        (row < boardDim - 1 && column > 0 && solvedBoard[row + 1][column - 1] == 'X') ||
+        (row > 0 && column < boardDim - 1 && solvedBoard[row - 1][column + 1] == 'X') ||
+        (row > 0 && column > 0 && solvedBoard[row - 1][column - 1] == 'X'))
+    {
+        return 0;
+    }
+    return 1;
+}
+
+// The func checks if there is already a queeen in the area.
+int isQueenInArea(char solvedBoard[BOARD_DIMENSIONS][BOARD_DIMENSIONS], char board[BOARD_DIMENSIONS][BOARD_DIMENSIONS],
+                  char area, int row, int column, int boardDim)
+{
+    if (row >= boardDim)
+    {
+        return 1;
+    }
+    if (column >= boardDim)
+    {
+        return isQueenInArea(solvedBoard, board, area, row + 1, 0, boardDim);
+    }
+    if (board[row][column] == area && solvedBoard[row][column] == 'X')
+    {
+        return 0;
+    }
+    return isQueenInArea(solvedBoard, board, area, row, column + 1, boardDim);
 }
 
 /* Case 5 :
-*/
+ */
 void task5CrosswordGenerator()
 {
     // Todo
